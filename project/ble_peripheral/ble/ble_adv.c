@@ -42,7 +42,7 @@ u32 ble_get_adv_data(u8 *adv_buf, u32 buf_size)
     u32 data_len = sizeof(adv_data_const);
     memcpy(adv_buf, adv_data_const, data_len);
 
-    {
+    {// 广播头
         adv_buf[data_len++] = 15;       // lenght
         adv_buf[data_len++] = 0xFF;     // type
 
