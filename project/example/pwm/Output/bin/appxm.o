@@ -1,0 +1,6 @@
+depend(0x01010200);
+setflash(1, 0x20000, 1, 0, 0);
+setdataseg(0x1000);
+setspace(0x2000);
+make(dcf_buf, header.bin, app.bin, null);
+save(dcf_buf, app.dcf);

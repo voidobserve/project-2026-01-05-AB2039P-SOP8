@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="wireless_peripheral" />
+		<Option pch_mode="2" />
+		<Option compiler="riscv32" />
+		<Build>
+			<Target title="Debug">
+				<Option output="Output/bin/app.rv32" prefix_auto="1" extension_auto="0" />
+				<Option object_output="Output/obj/" />
+				<Option type="1" />
+				<Option compiler="riscv32" />
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Os" />
+			<Add option="-Wall" />
+			<Add option="-march=rv32imacxbs1" />
+			<Add option="-ffunction-sections" />
+			<Add option="-msave-restore" />
+			<Add option="-mjump-tables-in-text" />
+			<Add directory="." />
+			<Add directory="../../header" />
+			<Add directory="../../libs" />
+			<Add directory="../../libs/ble" />
+			<Add directory="../../libs/cpu" />
+			<Add directory="../../libs/usb" />
+			<Add directory="../../libs/wireless" />
+			<Add directory="../../driver" />
+			<Add directory="app" />
+			<Add directory="modules/ble" />
+			<Add directory="modules/common" />
+			<Add directory="modules/fota" />
+			<Add directory="modules/usb/src" />
+			<Add directory="modules/usb/usr" />
+			<Add directory="modules/wireless" />
+			<Add directory="bsp" />
+			<Add directory="prod_test" />
+			<Add directory="prod_test/iodm" />
+		</Compiler>
+		<Linker>
+			<Add option="-T$(TARGET_OBJECT_DIR)ram.o" />
+			<Add option="--gc-sections" />
+			<Add option="-Map=Output\bin\map.txt" />
+			<Add library="../../libs/cpu/libplatform.a" />
+			<Add library="../../libs/cpu/libm.a" />
+			<Add library="../../libs/cpu/libc.a" />
+			<Add library="../../libs/cpu/libgcc.a" />
+			<Add library="../../libs/usb/libusb.a" />
+			<Add library="../../libs/wireless/libwireless_slave.a" />
+		</Linker>
+		<ExtraCommands>
+			<Add before="Output\bin\prebuild.bat $(PROJECT_NAME)" />
+			<Add after="Output\bin\postbuild.bat $(PROJECT_NAME)" />
+		</ExtraCommands>
+		<Unit filename="../../driver/driver_clk.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../driver/driver_clk.h" />
+		<Unit filename="../../driver/driver_com.h" />
+		<Unit filename="../../driver/driver_gpio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../driver/driver_gpio.h" />
+		<Unit filename="../../driver/driver_hsuart.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../driver/driver_hsuart.h" />
+		<Unit filename="../../driver/driver_keyscan.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../driver/driver_keyscan.h" />
+		<Unit filename="../../driver/driver_ledc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../driver/driver_ledc.h" />
+		<Unit filename="../../driver/driver_lowpwr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../driver/driver_lowpwr.h" />
+		<Unit filename="../../driver/driver_rtc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../driver/driver_rtc.h" />
+		<Unit filename="../../driver/driver_saradc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../driver/driver_saradc.h" />
+		<Unit filename="../../driver/driver_spi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../driver/driver_spi.h" />
+		<Unit filename="../../driver/driver_tmr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../driver/driver_tmr.h" />
+		<Unit filename="../../driver/driver_uart.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../driver/driver_uart.h" />
+		<Unit filename="../../driver/driver_wdt.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../driver/driver_wdt.h" />
+		<Unit filename="../../header/clib.h" />
+		<Unit filename="../../header/global.h" />
+		<Unit filename="../../header/include.h" />
+		<Unit filename="../../header/macro.h" />
+		<Unit filename="../../header/s_common.h" />
+		<Unit filename="../../header/sfr.h" />
+		<Unit filename="../../header/typedef.h" />
+		<Unit filename="../../libs/api.h" />
+		<Unit filename="../../libs/ble/api_btstack.h" />
+		<Unit filename="../../libs/ble/btstack_define.h" />
+		<Unit filename="../../libs/cpu/api_cm.h" />
+		<Unit filename="../../libs/cpu/api_codec.h" />
+		<Unit filename="../../libs/cpu/api_device.h" />
+		<Unit filename="../../libs/cpu/api_interrupt.h" />
+		<Unit filename="../../libs/cpu/api_key.h" />
+		<Unit filename="../../libs/cpu/api_list.h" />
+		<Unit filename="../../libs/cpu/api_mic.h" />
+		<Unit filename="../../libs/cpu/api_msg.h" />
+		<Unit filename="../../libs/cpu/api_os.h" />
+		<Unit filename="../../libs/cpu/api_pwr.h" />
+		<Unit filename="../../libs/cpu/api_sys.h" />
+		<Unit filename="../../libs/cpu/api_sysclk.h" />
+		<Unit filename="../../libs/cpu/api_update.h" />
+		<Unit filename="../../libs/usb/api_usb.h" />
+		<Unit filename="../../libs/wireless/api_timer.h" />
+		<Unit filename="../../libs/wireless/api_wireless.h" />
+		<Unit filename="Output/bin/app.xm">
+			<Option compile="1" />
+			<Option compiler="riscv32" use="1" buildCommand="$compiler $options $includes -E -P -x c -c $file -o $(TARGET_OUTPUT_DIR)appxm.o" />
+		</Unit>
+		<Unit filename="Output/bin/download.xm">
+			<Option compile="1" />
+			<Option compiler="riscv32" use="1" buildCommand=" " />
+		</Unit>
+		<Unit filename="Output/bin/xcfg.xm">
+			<Option compile="1" />
+			<Option compiler="riscv32" use="1" buildCommand=" " />
+		</Unit>
+		<Unit filename="app/func.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="app/func.h" />
+		<Unit filename="app/func_idle.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="app/func_idle.h" />
+		<Unit filename="app/func_iodm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="app/func_iodm.h" />
+		<Unit filename="app/func_lowpwr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="app/func_lowpwr.h" />
+		<Unit filename="app/func_wireless.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="app/func_wireless.h" />
+		<Unit filename="app/msg.h" />
+		<Unit filename="bsp/bsp.h" />
+		<Unit filename="bsp/bsp_huart_iodm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bsp/bsp_huart_iodm.h" />
+		<Unit filename="bsp/bsp_io_key.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bsp/bsp_io_key.h" />
+		<Unit filename="bsp/bsp_key.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bsp/bsp_key.h" />
+		<Unit filename="bsp/bsp_param.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bsp/bsp_param.h" />
+		<Unit filename="bsp/bsp_saradc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bsp/bsp_saradc.h" />
+		<Unit filename="bsp/bsp_saradc_key.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bsp/bsp_saradc_key.h" />
+		<Unit filename="bsp/bsp_saradc_vbat.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bsp/bsp_saradc_vbat.h" />
+		<Unit filename="bsp/bsp_sys.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bsp/bsp_sys.h" />
+		<Unit filename="bsp/bsp_uart_debug.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bsp/bsp_uart_debug.h" />
+		<Unit filename="config.h" />
+		<Unit filename="config_define.h" />
+		<Unit filename="config_extra.h" />
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="modules/common/common.h" />
+		<Unit filename="modules/common/hid_defines.h" />
+		<Unit filename="modules/common/hid_usage.h" />
+		<Unit filename="modules/fota/fota_proc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="modules/fota/fota_proc.h" />
+		<Unit filename="modules/usb/src/usb_audio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="modules/usb/src/usb_audio.h" />
+		<Unit filename="modules/usb/src/usb_audio_desc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="modules/usb/src/usb_audio_desc.h" />
+		<Unit filename="modules/usb/src/usb_com.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="modules/usb/src/usb_com.h" />
+		<Unit filename="modules/usb/src/usb_desc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="modules/usb/src/usb_desc.h" />
+		<Unit filename="modules/usb/src/usb_dev_enum.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="modules/usb/src/usb_dev_enum.h" />
+		<Unit filename="modules/usb/src/usb_hid.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="modules/usb/src/usb_hid.h" />
+		<Unit filename="modules/usb/src/usb_hid_desc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="modules/usb/src/usb_hid_desc.h" />
+		<Unit filename="modules/usb/src/usb_vendor.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="modules/usb/src/usb_vendor.h" />
+		<Unit filename="modules/usb/src/usb_vendor_desc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="modules/usb/src/usb_vendor_desc.h" />
+		<Unit filename="modules/usb/usr/usb_usr_audio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="modules/usb/usr/usb_usr_audio.h" />
+		<Unit filename="modules/usb/usr/usb_usr_hid.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="modules/usb/usr/usb_usr_hid.h" />
+		<Unit filename="modules/usb/usr/usb_usr_vendor.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="modules/usb/usr/usb_usr_vendor.h" />
+		<Unit filename="modules/wireless/wireless.h" />
+		<Unit filename="modules/wireless/wireless_init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="modules/wireless/wireless_service.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="prod_test/iodm/prod_test_iodm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="prod_test/iodm/prod_test_iodm.h" />
+		<Unit filename="prod_test/prod_test.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="prod_test/prod_test.h" />
+		<Unit filename="ram.ld">
+			<Option compile="1" />
+			<Option compiler="riscv32-v2" use="1" buildCommand="$compiler $options $includes -E -P -x c -c $file -o $(TARGET_OBJECT_DIR)ram.o" />
+			<Option compiler="riscv32" use="1" buildCommand="$compiler $options $includes -E -P -x c -c $file -o $(TARGET_OBJECT_DIR)ram.o" />
+		</Unit>
+		<Unit filename="res.h" />
+		<Unit filename="strong_symbol.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="xcfg.h" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>
