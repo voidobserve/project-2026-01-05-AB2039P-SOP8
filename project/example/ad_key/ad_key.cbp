@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="ad_key" />
+		<Option pch_mode="2" />
+		<Option compiler="riscv32" />
+		<Build>
+			<Target title="Debug">
+				<Option output="Output/bin/app.rv32" prefix_auto="1" extension_auto="0" />
+				<Option object_output="Output/obj/" />
+				<Option type="1" />
+				<Option compiler="riscv32" />
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Os" />
+			<Add option="-Wall" />
+			<Add option="-march=rv32imacxbs1" />
+			<Add option="-ffunction-sections" />
+			<Add option="-msave-restore" />
+			<Add option="-mjump-tables-in-text" />
+			<Add directory="." />
+			<Add directory="../../../header" />
+			<Add directory="../../../libs" />
+			<Add directory="../../../libs/cpu" />
+			<Add directory="../../../libs/ble" />
+			<Add directory="../../../libs/usb" />
+			<Add directory="../../../driver" />
+			<Add directory="hardware" />
+		</Compiler>
+		<Linker>
+			<Add option="-T$(TARGET_OBJECT_DIR)ram.o" />
+			<Add option="--gc-sections" />
+			<Add option="-Map=Output\bin\map.txt" />
+			<Add library="../../../libs/cpu/libplatform.a" />
+			<Add library="../../../libs/cpu/libm.a" />
+			<Add library="../../../libs/cpu/libc.a" />
+			<Add library="../../../libs/cpu/libgcc.a" />
+		</Linker>
+		<ExtraCommands>
+			<Add after="Output\bin\postbuild.bat $(PROJECT_NAME)" />
+		</ExtraCommands>
+		<Unit filename="../../../driver/driver_clk.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../driver/driver_clk.h" />
+		<Unit filename="../../../driver/driver_com.h" />
+		<Unit filename="../../../driver/driver_gpio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../driver/driver_gpio.h" />
+		<Unit filename="../../../driver/driver_saradc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../driver/driver_saradc.h" />
+		<Unit filename="../../../driver/driver_uart.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../driver/driver_uart.h" />
+		<Unit filename="../../../header/clib.h" />
+		<Unit filename="../../../header/global.h" />
+		<Unit filename="../../../header/include.h" />
+		<Unit filename="../../../header/macro.h" />
+		<Unit filename="../../../header/s_common.h" />
+		<Unit filename="../../../header/sfr.h" />
+		<Unit filename="../../../header/typedef.h" />
+		<Unit filename="../../../libs/api.h" />
+		<Unit filename="../../../libs/ble/api_btstack.h" />
+		<Unit filename="../../../libs/cpu/api_cm.h" />
+		<Unit filename="../../../libs/cpu/api_interrupt.h" />
+		<Unit filename="../../../libs/cpu/api_key.h" />
+		<Unit filename="../../../libs/cpu/api_msg.h" />
+		<Unit filename="../../../libs/cpu/api_pwr.h" />
+		<Unit filename="../../../libs/cpu/api_sdadc.h" />
+		<Unit filename="../../../libs/cpu/api_sys.h" />
+		<Unit filename="../../../libs/cpu/api_sysclk.h" />
+		<Unit filename="../../../libs/cpu/api_update.h" />
+		<Unit filename="../../../libs/usb/api_device.h" />
+		<Unit filename="../../../libs/usb/api_usb.h" />
+		<Unit filename="Output/bin/app.xm">
+			<Option compile="1" />
+			<Option compiler="riscv32" use="1" buildCommand="$compiler $options $includes -E -P -x c -c $file -o $(TARGET_OUTPUT_DIR)appxm.o" />
+		</Unit>
+		<Unit filename="Output/bin/download.xm">
+			<Option compile="1" />
+			<Option compiler="riscv32" use="1" buildCommand=" " />
+		</Unit>
+		<Unit filename="bsp.h" />
+		<Unit filename="config.h" />
+		<Unit filename="config_define.h" />
+		<Unit filename="hardware/ad_key.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="hardware/ad_key.h" />
+		<Unit filename="hardware/bsp_uart_debug.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="hardware/bsp_uart_debug.h" />
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ram.ld">
+			<Option compile="1" />
+			<Option compiler="riscv32-v2" use="1" buildCommand="$compiler $options $includes -E -P -x c -c $file -o $(TARGET_OBJECT_DIR)ram.o" />
+			<Option compiler="riscv32" use="1" buildCommand="$compiler $options $includes -E -P -x c -c $file -o $(TARGET_OBJECT_DIR)ram.o" />
+		</Unit>
+		<Unit filename="xcfg.h" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>

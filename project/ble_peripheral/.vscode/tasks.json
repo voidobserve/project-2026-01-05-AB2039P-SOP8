@@ -1,0 +1,44 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "make",
+            "args": ["all"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "编译 ble_peripheral 项目"
+        },
+        {
+            "label": "Clean",
+            "type": "shell",
+            "command": "make",
+            "args": ["clean"],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "清理编译产物"
+        },
+        {
+            "label": "Rebuild",
+            "type": "shell",
+            "command": "make",
+            "args": ["rebuild"],
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "清理后重新编译"
+        },
+        {
+            "label": "Build (Verbose)",
+            "type": "shell",
+            "command": "make",
+            "args": ["all", "V=1"],
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "详细输出编译过程"
+        }
+    ]
+}

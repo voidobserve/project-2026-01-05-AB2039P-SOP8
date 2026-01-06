@@ -1,0 +1,27 @@
+#ifndef __BLE_PROFILE_H
+#define __BLE_PROFILE_H
+
+#define CCCD_DFT                    0           //定义client config的默认值,对于有些应用，主机不会进行订阅的情况，可以设置成1
+
+//
+// list service handle ranges
+//
+#define ATT_SERVICE_FF12_START_HANDLE 0x0001
+#define ATT_SERVICE_FF12_END_HANDLE 0x0006
+#define ATT_SERVICE_FF20_START_HANDLE 0x0007
+#define ATT_SERVICE_FF20_END_HANDLE 0x000c
+
+//
+// list mapping between characteristics and handles
+//
+#define ATT_CHARACTERISTIC_FF15_01_VALUE_HANDLE 0x0003
+#define ATT_CHARACTERISTIC_FF14_01_VALUE_HANDLE 0x0005
+#define ATT_CHARACTERISTIC_FF14_01_CLIENT_CONFIGURATION_HANDLE 0x0006
+#define ATT_CHARACTERISTIC_FF21_01_VALUE_HANDLE 0x0009
+#define ATT_CHARACTERISTIC_FF22_01_VALUE_HANDLE 0x000b
+#define ATT_CHARACTERISTIC_FF22_01_CLIENT_CONFIGURATION_HANDLE 0x000c
+
+
+const u8 *ble_get_profile_data(void);
+
+#endif
