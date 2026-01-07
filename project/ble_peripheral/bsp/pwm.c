@@ -88,8 +88,9 @@ typedef struct _light_module_t
 typedef struct _light_save_param_t
 {
     u8 first_pwr_on_crc;
+    u8 power; // 开关标志
     u8 mode;
-    // u8 auto_weather_enable;
+    u8 auto_weather_enable;
     u16 brightness_target;
     u16 temperature_target;
     // u8 weather_index;
@@ -127,11 +128,11 @@ void light_module_check_save_param_event(void)
         light_save_param.mode = light_cb.mode;
         ticks = tick_get_nonzero();
     }
-    // if (light_save_param.auto_weather_enable != light_cb.auto_weather_enable)
-    // {
-    //     light_save_param.auto_weather_enable = light_cb.auto_weather_enable;
-    //     ticks = tick_get_nonzero();
-    // }
+    if (light_save_param.auto_weather_enable != light_cb.auto_weather_enable)
+    {
+        light_save_param.auto_weather_enable = light_cb.auto_weather_enable;
+        ticks = tick_get_nonzero();
+    }
     if (light_save_param.brightness_target != light_cb.brightness_target)
     {
         light_save_param.brightness_target = light_cb.brightness_target;
@@ -277,11 +278,14 @@ void pwm_init(void)
 
         printf("first power on\n");
         light_save_param.first_pwr_on_crc = 0x55;
+        light_save_param.power = light_cb.power;
         light_save_param.mode = light_cb.mode;
         light_save_param.brightness_target = light_cb.brightness_target;
         light_save_param.temperature_target = light_cb.temperature_target;
+        light_save_param.auto_weather_enable = light_cb.auto_weather_enable;
         memcpy((void *)light_save_param.password_buff, (const void *)buff, sizeof(light_save_param.password_buff));
         bsp_param_write((u8 *)&light_save_param, PARAM_LIGHT_START_ADDR, sizeof(light_save_param_t));
+        bsp_param_sync();
     }
     else
     {
@@ -291,11 +295,14 @@ void pwm_init(void)
     }
 
     // 初始化数据：
+    light_cb.power = light_save_param.power;
+    light_cb.auto_weather_enable = light_save_param.auto_weather_enable;
     light_cb.mode = light_save_param.mode;
     light_cb.brightness_target = light_save_param.brightness_target;
     light_cb.temperature_target = light_save_param.temperature_target;
     memcpy((void *)light_cb.password_buff, (const void *)light_save_param.password_buff, sizeof(light_save_param.password_buff));
 
+    printf("light_cb.power == %2d\n", light_cb.power);
     printf("light_cb.mode == %2d\n", light_cb.mode);
     printf("light_cb.brightness_target == %u\n", light_cb.brightness_target);
     printf("light_cb.temperature_target == %u\n", light_cb.temperature_target);
@@ -388,44 +395,45 @@ void light_module_10ms_function(void)
     if (!light_cb.init || !light_cb.power)
         return;
 
-    if (light_cb.mode == LIGHT_MODE_STATIC || light_cb.mode == LIGHT_MODE_WEATHER)
-    {
-        if (light_cb.brightness_current != light_cb.brightness_target)
-        {
-#if PWM_CHANGE_FADE_ENABLE
-            if ((light_cb.brightness_current + light_cb.brightness_step) < light_cb.brightness_target)
-            {
-                light_cb.brightness_current += light_cb.brightness_step;
-            }
-            else if (light_cb.brightness_current > (light_cb.brightness_target + light_cb.brightness_step))
-            {
-                light_cb.brightness_current -= light_cb.brightness_step;
-            }
-            else
-#endif
-            {
-                light_cb.brightness_current = light_cb.brightness_target;
-            }
+    //     if (light_cb.mode == LIGHT_MODE_STATIC || light_cb.mode == LIGHT_MODE_WEATHER)
+    //     {
+    //         if (light_cb.brightness_current != light_cb.brightness_target)
+    //         {
+    // #if PWM_CHANGE_FADE_ENABLE
+    //             if ((light_cb.brightness_current + light_cb.brightness_step) < light_cb.brightness_target)
+    //             {
+    //                 light_cb.brightness_current += light_cb.brightness_step;
+    //             }
+    //             else if (light_cb.brightness_current > (light_cb.brightness_target + light_cb.brightness_step))
+    //             {
+    //                 light_cb.brightness_current -= light_cb.brightness_step;
+    //             }
+    //             else
+    // #endif
+    //             {
+    //                 light_cb.brightness_current = light_cb.brightness_target;
+    //             }
 
-            TMRP_SET_BRIGHTNESS(light_cb.brightness_current); // 亮度
-        }
+    //             TMRP_SET_BRIGHTNESS(light_cb.brightness_current); // 亮度
+    //         }
 
-        if (light_cb.temperature_current != light_cb.temperature_target)
-        {
-            light_cb.temperature_current = light_cb.temperature_target;
+    //         if (light_cb.temperature_current != light_cb.temperature_target)
+    //         {
+    //             light_cb.temperature_current = light_cb.temperature_target;
 
-            TMRP_SET_TEMPERATURE(light_cb.temperature_current); // 色温
-        }
+    //             TMRP_SET_TEMPERATURE(light_cb.temperature_current); // 色温
+    //         }
 
-#if PWM_CHANGE_FADE_ENABLE
-        // 变速渐变
-        if (light_cb.brightness_step < 50)
-            light_cb.brightness_step += 1;
-        if (light_cb.brightness_step >= 50)
-            light_cb.brightness_step = 50;
-#endif
-    }
-    else if (light_cb.mode == LIGHT_MODE_FLASH)
+    // #if PWM_CHANGE_FADE_ENABLE
+    //         // 变速渐变
+    //         if (light_cb.brightness_step < 50)
+    //             light_cb.brightness_step += 1;
+    //         if (light_cb.brightness_step >= 50)
+    //             light_cb.brightness_step = 50;
+    // #endif
+    //     }
+    // else if (light_cb.mode == LIGHT_MODE_FLASH)
+    if (light_cb.mode == LIGHT_MODE_FLASH)
     {
         if (light_cb.timeing < 6)
         {
@@ -525,6 +533,36 @@ void light_module_10ms_function(void)
         TMRP_SET_BRIGHTNESS(1000);   // 亮度10%
         TMRP_SET_TEMPERATURE(10000); // 色温-纯白色
     }
+    else
+    {
+        // 其他模式，通过app发送过来的参数来设置亮度和色温
+        if (light_cb.brightness_current != light_cb.brightness_target)
+        {
+#if PWM_CHANGE_FADE_ENABLE
+            if ((light_cb.brightness_current + light_cb.brightness_step) < light_cb.brightness_target)
+            {
+                light_cb.brightness_current += light_cb.brightness_step;
+            }
+            else if (light_cb.brightness_current > (light_cb.brightness_target + light_cb.brightness_step))
+            {
+                light_cb.brightness_current -= light_cb.brightness_step;
+            }
+            else
+#endif
+            {
+                light_cb.brightness_current = light_cb.brightness_target;
+            }
+
+            TMRP_SET_BRIGHTNESS(light_cb.brightness_current); // 亮度
+        }
+
+        if (light_cb.temperature_current != light_cb.temperature_target)
+        {
+            light_cb.temperature_current = light_cb.temperature_target;
+
+            TMRP_SET_TEMPERATURE(light_cb.temperature_current); // 色温
+        }
+    }
 }
 
 AT(.com_text.isr)
@@ -543,11 +581,11 @@ void light_module_ble_event(u8 *buffer, u16 len)
     if (len == 4 && buffer[2] == 0x01 && buffer[3] == 0x03)
     {
         // 同步
-        service_notify_event((u8[]){0x01, 0xF9, 0x02, 0x01, light_cb.power}, 5);
-
+        service_notify_event((u8[]){0x01, 0xF9, 0x02, 0x01, light_cb.power}, 5); // 灯的开关
+        service_notify_event((u8[]){0x01, 0xF9, 0x02, 0x02, light_cb.auto_weather_enable}, 5); // 自动模式开关
         param1 = light_cb.temperature_target / 100;
         param2 = light_cb.brightness_target / 100;
-        service_notify_event((u8[]){0x01, 0xF9, 0x03, 0x01, light_cb.mode, param1, param2}, 7);
+        service_notify_event((u8[]){0x01, 0xF9, 0x03, 0x01, light_cb.mode, param1, param2}, 7); // 当前的模式、色温值、亮度值
     }
     else if (len == 5 && buffer[2] == 0x02 && buffer[3] == 0x01)
     {
@@ -565,6 +603,12 @@ void light_module_ble_event(u8 *buffer, u16 len)
             light_cb.brightness_current = -1;
             light_cb.temperature_current = -1;
         }
+    }
+    else if (len == 5 && buffer[2] == 0x02 && buffer[3] == 0x02)
+    {
+        // 自动模式开关
+        light_cb.auto_weather_enable = buffer[4] ? 1 : 0;
+        service_notify_event((u8[]){0x01, 0xF9, 0x02, 0x02, light_cb.auto_weather_enable}, 5);
     }
     else if (len == 7 && buffer[2] == 0x03 && buffer[3] == 0x01)
     {
@@ -654,7 +698,7 @@ void light_module_ble_event(u8 *buffer, u16 len)
         memcpy(light_cb.password_buff, &buffer[4], 6);
         service_notify_event((u8[]){0x01, 0xF9, 0x01, 0x05, 0x01}, 5); // 表示密码修改成功
     }
-    else if (buffer[2] == 0x01 && buffer[3] == 0x02 && len != 10)
+    else if (len != 10 && buffer[2] == 0x01 && buffer[3] == 0x02)
     {
         // 修改密码，但是指令长度不一致
         service_notify_event((u8[]){0x01, 0xF9, 0x01, 0x05, 0x00}, 5); // 表示密码修改失败
