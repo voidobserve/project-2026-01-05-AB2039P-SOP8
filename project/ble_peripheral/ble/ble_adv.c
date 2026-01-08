@@ -21,14 +21,6 @@ u32 ble_get_scan_data(u8 *scan_buf, u32 buf_size)
 
     // 给蓝牙名称后面添加后缀，后缀：-MAC地址的后两个字节
     // 例如：BLE_NAME-4552
-    // u8 ascii_char_byte_1;
-    // u8 ascii_char_byte_2;
-    // itoa((int)(xcfg_cb.le_addr[4]), &ascii_char_byte_1, 1);
-    // itoa((int)(xcfg_cb.le_addr[5]), &ascii_char_byte_2, 1);
-    // strncat(xcfg_cb.le_name, "-", 1);
-    // strncat(xcfg_cb.le_name, &ascii_char_byte_1, 1);
-    // strncat(xcfg_cb.le_name, &ascii_char_byte_2, 1);
-    // strncat(xcfg_cb.le_name, "\0", 1);
 
     u8 buf[5] = {0};
     sprintf(buf, "-%02X%02X", xcfg_cb.le_addr[4], xcfg_cb.le_addr[5]);

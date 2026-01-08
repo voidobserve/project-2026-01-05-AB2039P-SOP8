@@ -75,7 +75,6 @@ typedef struct _light_module_t
 #endif
     u16 temperature_current;
     u16 temperature_target;
-    u8 weather_index;
 
     u8 timeing_step;
     u8 timeing_state;
@@ -143,11 +142,6 @@ void light_module_check_save_param_event(void)
         light_save_param.temperature_target = light_cb.temperature_target;
         ticks = tick_get_nonzero();
     }
-    // if (light_save_param.weather_index != light_cb.weather_index)
-    // {
-    //     light_save_param.weather_index = light_cb.weather_index;
-    //     ticks = tick_get_nonzero();
-    // }
 
     if (memcmp(light_save_param.password_buff, light_cb.password_buff, sizeof(light_save_param.password_buff)))
     {
@@ -159,12 +153,6 @@ void light_module_check_save_param_event(void)
     if (ticks && tick_check_expire(ticks, 1000))
     {
         ticks = 0;
-
-        // bsp_param_write((u8 *)&light_save_param.mode, PARAM_LIGHT_MODE, sizeof(light_save_param.mode));
-        // bsp_param_write((u8 *)&light_save_param.auto_weather_enable, PARAM_LIGHT_AUTO_WEATHER, sizeof(light_save_param.auto_weather_enable));
-        // bsp_param_write((u8 *)&light_save_param.brightness_target, PARAM_LIGHT_BRIGHTNESS, sizeof(light_save_param.brightness_target));
-        // bsp_param_write((u8 *)&light_save_param.temperature_target, PARAM_LIGHT_TEMPERATURE, sizeof(light_save_param.temperature_target));
-        // bsp_param_write((u8 *)&light_save_param.weather_index, PARAM_LIGHT_WEATHER_INDEX, sizeof(light_save_param.weather_index));
 
         bsp_param_write((u8 *)&light_save_param, PARAM_LIGHT_START_ADDR, sizeof(light_save_param_t));
 
@@ -228,13 +216,20 @@ void pwm_init(void)
     tmrp_set_duty(TMRP, TMRP_PWM3, 0 - 1); // duty 0%
 
     light_cb.power = 1;
-    light_cb.mode = LIGHT_MODE_STATIC;
+    // light_cb.mode = LIGHT_MODE_STATIC;
+    light_cb.mode = LIGHT_MODE_DRL;
     light_cb.auto_weather_enable = 0;
+
+    // light_cb.brightness_current = -1;
+    // light_cb.brightness_target = 10000;
+    // light_cb.temperature_current = -1;
+    // light_cb.temperature_target = 0;
+
+    light_cb.temperature_target = 0;   // 色温：纯白色
+    light_cb.brightness_target = 1000; // 亮度10%
     light_cb.brightness_current = -1;
-    light_cb.brightness_target = 10000;
     light_cb.temperature_current = -1;
-    light_cb.temperature_target = 0;
-    light_cb.weather_index = 1;
+
 #if PWM_CHANGE_FADE_ENABLE
     light_cb.brightness_step = 0;
 #endif
@@ -242,33 +237,6 @@ void pwm_init(void)
     light_cb.timeing_step = 0;
     light_cb.timeing_state = 1;
     light_cb.timeing_c = 0;
-
-    // bsp_param_read((u8 *)&first, PARAM_LIGHT_MARK, sizeof(first));
-    // if (first != 0x55)
-    // {
-    //     first = 0x55;
-    //     bsp_param_write((u8 *)&first, PARAM_LIGHT_MARK, sizeof(first));
-
-    //     bsp_param_write((u8 *)&light_cb.mode, PARAM_LIGHT_MODE, sizeof(light_cb.mode));
-    //     bsp_param_write((u8 *)&light_cb.auto_weather_enable, PARAM_LIGHT_AUTO_WEATHER, sizeof(light_cb.auto_weather_enable));
-    //     bsp_param_write((u8 *)&light_cb.brightness_target, PARAM_LIGHT_BRIGHTNESS, sizeof(light_cb.brightness_target));
-    //     bsp_param_write((u8 *)&light_cb.temperature_target, PARAM_LIGHT_TEMPERATURE, sizeof(light_cb.temperature_target));
-    //     bsp_param_write((u8 *)&light_cb.weather_index, PARAM_LIGHT_WEATHER_INDEX, sizeof(light_cb.weather_index));
-    //     bsp_param_sync();
-    // }
-    // else
-    // {
-    //     bsp_param_read((u8 *)&light_cb.mode, PARAM_LIGHT_MODE, sizeof(light_cb.mode));
-    //     bsp_param_read((u8 *)&light_cb.auto_weather_enable, PARAM_LIGHT_AUTO_WEATHER, sizeof(light_cb.auto_weather_enable));
-    //     bsp_param_read((u8 *)&light_cb.brightness_target, PARAM_LIGHT_BRIGHTNESS, sizeof(light_cb.brightness_target));
-    //     bsp_param_read((u8 *)&light_cb.temperature_target, PARAM_LIGHT_TEMPERATURE, sizeof(light_cb.temperature_target));
-    //     bsp_param_read((u8 *)&light_cb.weather_index, PARAM_LIGHT_WEATHER_INDEX, sizeof(light_cb.weather_index));
-    // }
-    // light_save_param.mode = light_cb.mode;
-    // light_save_param.auto_weather_enable = light_cb.auto_weather_enable;
-    // light_save_param.brightness_target = light_cb.brightness_target;
-    // light_save_param.temperature_target = light_cb.temperature_target;
-    // light_save_param.weather_index = light_cb.weather_index;
 
     bsp_param_read((u8 *)&light_save_param, PARAM_LIGHT_START_ADDR, sizeof(light_save_param_t));
     if (light_save_param.first_pwr_on_crc != 0x55)
@@ -367,27 +335,29 @@ static const u8 sos_state[] = {
 };
 AT(.com_rodata.pwm)
 static const u16 sos_temperature[] = {
-    10000,
-    10000,
-    10000,
-    10000,
-    10000,
-    10000, // S: 冷白色
-    10000, // 间隔
     0,
-    10000,
     0,
-    10000,
     0,
+    0,
+    0, // S: 冷白色
+    0, // 间隔
+    0,
+
+    10000,
+    10000,
+    10000,
+    10000,
     10000, // O: 暖白色
     10000, // 间隔
-    10000,
-    10000,
-    10000,
-    10000,
-    10000,
-    10000, // S: 冷白色
-    10000, // 间隔
+    0,
+
+    0,
+    0,
+    0,
+    0,
+    0, // S: 冷白色
+    0, // 间隔
+
 };
 AT(.com_text.isr)
 void light_module_10ms_function(void)
@@ -395,44 +365,6 @@ void light_module_10ms_function(void)
     if (!light_cb.init || !light_cb.power)
         return;
 
-    //     if (light_cb.mode == LIGHT_MODE_STATIC || light_cb.mode == LIGHT_MODE_WEATHER)
-    //     {
-    //         if (light_cb.brightness_current != light_cb.brightness_target)
-    //         {
-    // #if PWM_CHANGE_FADE_ENABLE
-    //             if ((light_cb.brightness_current + light_cb.brightness_step) < light_cb.brightness_target)
-    //             {
-    //                 light_cb.brightness_current += light_cb.brightness_step;
-    //             }
-    //             else if (light_cb.brightness_current > (light_cb.brightness_target + light_cb.brightness_step))
-    //             {
-    //                 light_cb.brightness_current -= light_cb.brightness_step;
-    //             }
-    //             else
-    // #endif
-    //             {
-    //                 light_cb.brightness_current = light_cb.brightness_target;
-    //             }
-
-    //             TMRP_SET_BRIGHTNESS(light_cb.brightness_current); // 亮度
-    //         }
-
-    //         if (light_cb.temperature_current != light_cb.temperature_target)
-    //         {
-    //             light_cb.temperature_current = light_cb.temperature_target;
-
-    //             TMRP_SET_TEMPERATURE(light_cb.temperature_current); // 色温
-    //         }
-
-    // #if PWM_CHANGE_FADE_ENABLE
-    //         // 变速渐变
-    //         if (light_cb.brightness_step < 50)
-    //             light_cb.brightness_step += 1;
-    //         if (light_cb.brightness_step >= 50)
-    //             light_cb.brightness_step = 50;
-    // #endif
-    //     }
-    // else if (light_cb.mode == LIGHT_MODE_FLASH)
     if (light_cb.mode == LIGHT_MODE_FLASH)
     {
         if (light_cb.timeing < 6)
@@ -479,9 +411,9 @@ void light_module_10ms_function(void)
 
         if (light_cb.timeing_step == 0)
         {
-            if (light_cb.timeing_c <= 9980)
+            if (light_cb.timeing_c >= 20)
             {
-                light_cb.timeing_c += 20;
+                light_cb.timeing_c -= 20;
             }
             else
             {
@@ -490,9 +422,10 @@ void light_module_10ms_function(void)
         }
         else // if (light_cb.timeing_step == 1)
         {
-            if (light_cb.timeing_c >= 20)
+
+            if (light_cb.timeing_c <= 9980)
             {
-                light_cb.timeing_c -= 20;
+                light_cb.timeing_c += 20;
             }
             else
             {
@@ -530,8 +463,8 @@ void light_module_10ms_function(void)
     }
     else if (light_cb.mode == LIGHT_MODE_DRL)
     {
-        TMRP_SET_BRIGHTNESS(1000);   // 亮度10%
-        TMRP_SET_TEMPERATURE(10000); // 色温-纯白色
+        TMRP_SET_BRIGHTNESS(1000); // 亮度10%
+        TMRP_SET_TEMPERATURE(0);   // 色温-纯白色
     }
     else
     {
@@ -581,7 +514,7 @@ void light_module_ble_event(u8 *buffer, u16 len)
     if (len == 4 && buffer[2] == 0x01 && buffer[3] == 0x03)
     {
         // 同步
-        service_notify_event((u8[]){0x01, 0xF9, 0x02, 0x01, light_cb.power}, 5); // 灯的开关
+        service_notify_event((u8[]){0x01, 0xF9, 0x02, 0x01, light_cb.power}, 5);               // 灯的开关
         service_notify_event((u8[]){0x01, 0xF9, 0x02, 0x02, light_cb.auto_weather_enable}, 5); // 自动模式开关
         param1 = light_cb.temperature_target / 100;
         param2 = light_cb.brightness_target / 100;
@@ -610,7 +543,8 @@ void light_module_ble_event(u8 *buffer, u16 len)
         light_cb.auto_weather_enable = buffer[4] ? 1 : 0;
         service_notify_event((u8[]){0x01, 0xF9, 0x02, 0x02, light_cb.auto_weather_enable}, 5);
     }
-    else if (len == 7 && buffer[2] == 0x03 && buffer[3] == 0x01)
+    else if ((len == 7 && buffer[2] == 0x03 && buffer[3] == 0x01) || // len == 7，通过app直接设置时，总共只有7个字节
+             len == 8 && buffer[2] == 0x03 && buffer[3] == 0x01)     // len == 8，app获取天气时，会在尾部添加一个字节作为标识
     {
         /*
             设置模式、色温和亮度
@@ -621,27 +555,33 @@ void light_module_ble_event(u8 *buffer, u16 len)
         light_cb.mode = instruction;
         if (instruction == LIGHT_MODE_DRL)
         {
-            light_cb.temperature_target = TEMPERATURE_RANGE_MAX; // 色温：纯白色
-            light_cb.brightness_target = 1000;                   // 亮度10%
+            light_cb.temperature_target = 0;   // 色温：纯白色
+            light_cb.brightness_target = 1000; // 亮度10%
             light_cb.brightness_current = -1;
             light_cb.temperature_current = -1;
         }
-        else if (instruction == LIGHT_MODE_FLASH)
+        else if (instruction == LIGHT_MODE_FLASH ||
+                 instruction == LIGHT_MODE_FADE ||
+                 instruction == LIGHT_MODE_SOS)
         {
             // 不用改变亮度和色温，由扫描函数处理
+            light_cb.timeing = 0;
+            light_cb.timeing_step = 0;
+            light_cb.timeing_state = 1;
+            light_cb.timeing_c = 0;
         }
-        else if (instruction == LIGHT_MODE_FADE)
-        {
-            // 不用改变亮度和色温，由扫描函数处理
-        }
-        else if (instruction == LIGHT_MODE_SOS)
-        {
-            // 不用改变亮度和色温，由扫描函数处理
-        }
+        // else if ()
+        // {
+        //     // 不用改变亮度和色温，由扫描函数处理
+        // }
+        // else if (instruction == LIGHT_MODE_SOS)
+        // {
+        //     // 不用改变亮度和色温，由扫描函数处理
+        // }
         else if (instruction == LIGHT_MODE_WHITE)
         {
             // 亮度不变，白光变为100%
-            light_cb.temperature_target = TEMPERATURE_RANGE_MAX; // 色温：纯白色
+            light_cb.temperature_target = 0; // 色温：纯白色
             light_cb.temperature_current = -1;
         }
         else if (instruction == LIGHT_MODE_WHITE_YELLOW)
@@ -653,7 +593,7 @@ void light_module_ble_event(u8 *buffer, u16 len)
         else if (instruction == LIGHT_MODE_YELLOW)
         {
             // 亮度不变，黄光变为100%
-            light_cb.temperature_target = 0;
+            light_cb.temperature_target = TEMPERATURE_RANGE_MAX;
             light_cb.temperature_current = -1;
         }
         else
@@ -672,6 +612,13 @@ void light_module_ble_event(u8 *buffer, u16 len)
         service_notify_event((u8[]){0x01, 0xF9, 0x03, 0x01, light_cb.mode, param1, param2}, 7);
 
         printf("light mode == %02d\n", light_cb.mode);
+
+        if (len == 7)
+        {
+            // 手动设置模式时，默认关闭自动模式
+            light_cb.auto_weather_enable = 0;
+            service_notify_event((u8[]){0x01, 0xF9, 0x02, 0x02, light_cb.auto_weather_enable}, 5);
+        }
     }
     else if (len == 10 && buffer[2] == 0x01 && buffer[3] == 0x01)
     {
