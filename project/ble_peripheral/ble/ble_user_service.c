@@ -38,6 +38,7 @@ static void ble_event_callback(uint8_t event_type, uint8_t *param, uint16_t size
                 sys_cb.sleep_prevent = true;
             }
         #endif
+            ble_update_conn_param(ble_cb.con_handle, 12, 0, 400);
         } break;
 
         case BLE_EVT_DISCONNECT:{

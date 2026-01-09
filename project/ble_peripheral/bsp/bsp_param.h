@@ -25,6 +25,7 @@
 #define PARAM_LIGHT_WEATHER_INDEX       (PARAM_LIGHT_TEMPERATURE + PARAM_LIGHT_TEMPERATURE_LEN)
 #define PARAM_LIGHT_WEATHER_INDEX_LEN   1
 
+#define PARAM_LIGHT_START_ADDR (PARAM_FOT_HASH + PARAM_FOT_HASH_LEN)
 
 void bsp_param_init(void);
 void bsp_param_write(u8 *buf, u32 addr, uint len);
